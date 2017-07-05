@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "859454244340",
+    "firebase_url": "https://skylark-71ae2.firebaseio.com",
+    "project_id": "skylark-71ae2",
+    "storage_bucket": "skylark-71ae2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859454244340:android:d9382bf5990a1554",
+        "android_client_info": {
+          "package_name": "uk.co.epixstudios.skylark"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "859454244340-kdol5cgcs2lvt661sct8nhhfo8mo72cc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.co.epixstudios.skylark",
+            "certificate_hash": "3b5bcb3ac9113c180c8de13827baab9ad9044291"
+          }
+        },
+        {
+          "client_id": "859454244340-mem87et5rnpj1samjof96n3sng3rd6eg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHnH0TmTSDYWkGQBXlYDMqdCudmHv7gVY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859454244340-mem87et5rnpj1samjof96n3sng3rd6eg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
