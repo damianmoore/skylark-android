@@ -1,5 +1,6 @@
 package uk.co.epixstudios.skylark;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,7 +9,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 
@@ -30,6 +39,41 @@ public class MainActivity extends AppCompatActivity {
                 String refreshedToken = FirebaseInstanceId.getInstance().getToken();
                 Snackbar.make(view, "Token: " + refreshedToken, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        final TextView deviceNameInput = (TextView) findViewById(R.id.input_device_name);
+        deviceNameInput.setText(Build.MANUFACTURER + " " + Build.MODEL);
+
+        final TextView serverInput = (TextView) findViewById(R.id.input_server);
+        serverInput.setText("http://127.0.0.1:8000");
+
+
+        Button registerButton = (Button) findViewById(R.id.button_register);
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+
+                RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+                String url = serverInput.getText() + "/api/register/?name=" + deviceNameInput.getText();
+
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Snackbar.make(view, "Registered: " + response.substring(0,15) + "...", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Snackbar.make(view, "That didn't work!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                });
+
+                queue.add(stringRequest);
             }
         });
 

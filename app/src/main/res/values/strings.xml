@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Skylark</string>
     <string name="action_settings">Settings</string>
+    <string name="prompt_server">Server</string>
+    <string name="prompt_device_name">Device Name</string>
+    <string name="action_register">Register</string>
 </resources>
