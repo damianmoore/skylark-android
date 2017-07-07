@@ -1,5 +1,6 @@
 package uk.co.epixstudios.skylark;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,9 +17,16 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,11 +50,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final SharedPreferences settings = getPreferences(0);
+        boolean silent = settings.getBoolean("silentMode", false);
+
+
         final TextView deviceNameInput = (TextView) findViewById(R.id.input_device_name);
-        deviceNameInput.setText(Build.MANUFACTURER + " " + Build.MODEL);
+        deviceNameInput.setText(settings.getString("deviceName", Build.MANUFACTURER + " " + Build.MODEL));
 
         final TextView serverInput = (TextView) findViewById(R.id.input_server);
-        serverInput.setText("http://127.0.0.1:8000");
+        serverInput.setText(settings.getString("server", "http://127.0.0.1:8000"));
+
+        final TextView idInput = (TextView) findViewById(R.id.text_id);
+        idInput.setText(settings.getString("id", ""));
 
 
         Button registerButton = (Button) findViewById(R.id.button_register);
@@ -54,26 +69,54 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
 
-                RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+            RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
 
-                String url = serverInput.getText() + "/api/register/?name=" + deviceNameInput.getText();
+            String url = serverInput.getText() + "/api/register/";
 
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Snackbar.make(view, "Registered: " + response.substring(0,15) + "...", Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
-                            }
-                        }, new Response.ErrorListener() {
+            Map<String, String> jsonParams = new HashMap<String, String>();
+            jsonParams.put("name", deviceNameInput.getText().toString());
+
+            if (settings.contains("id")) {
+                jsonParams.put("id", settings.getString("id", ""));
+            }
+
+            String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+            if (!refreshedToken.isEmpty()) {
+                jsonParams.put("firebase_token", refreshedToken);
+            }
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        SharedPreferences settings = getPreferences(0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        try {
+                            editor.putString("id", response.get("id").toString());
+                        }
+                        catch (JSONException e) {}
+
+                        final TextView deviceNameInput = (TextView) findViewById(R.id.input_device_name);
+                        editor.putString("deviceName", deviceNameInput.getText().toString());
+
+                        final TextView serverInput = (TextView) findViewById(R.id.input_server);
+                        editor.putString("server", serverInput.getText().toString());
+
+                        editor.commit();
+
+                        Snackbar.make(view, "Registered", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Snackbar.make(view, "That didn't work!", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     }
-                });
+                }
+            );
 
-                queue.add(stringRequest);
+            queue.add(jsonObjectRequest);
             }
         });
 
