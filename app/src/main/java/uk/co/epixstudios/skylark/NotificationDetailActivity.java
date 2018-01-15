@@ -24,22 +24,18 @@ import java.util.Iterator;
 
 public class NotificationDetailActivity extends AppCompatActivity {
 
-    static TableLayout idTableVariables;
+    static TableLayout tableVariables;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notification_detail);
+        setContentView(R.layout.activity_detail);
 
-        idTableVariables = (TableLayout) findViewById(R.id.table_variables);
+        tableVariables = (TableLayout) findViewById(R.id.table_variables);
 
         SharedPreferences settings = getSharedPreferences("app_preferences", 0);
 
         final String server = settings.getString("server", "http://127.0.0.1:8000");
-
-        this.addTableRow(this,"server", server);
-        this.addTableRow(this,"deviceId", settings.getString("deviceId", ""));
-        this.addTableRow(this,"deviceName", settings.getString("deviceName", ""));
 
         String notificationId = getIntent().getStringExtra("NOTIFICATION_ID");
         this.addTableRow(this,"notificationId", notificationId);
@@ -49,14 +45,14 @@ public class NotificationDetailActivity extends AppCompatActivity {
     }
 
     static void addTableRow(Context context, String key, String val) {
-        final View item = LayoutInflater.from(context).inflate(R.layout.variable_row, idTableVariables, false);
+        final View item = LayoutInflater.from(context).inflate(R.layout.item_variable, tableVariables, false);
 
         final TextView keyText = (TextView) item.findViewById(R.id.key);
         final TextView valText = (TextView) item.findViewById(R.id.val);
 
         keyText.setText(key);
         valText.setText(val);
-        idTableVariables.addView(item);
+        tableVariables.addView(item);
     }
 
     void fetchParameters(String server, String notificationId) {

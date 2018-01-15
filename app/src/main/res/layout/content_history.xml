@@ -8,10 +8,36 @@
     tools:context="uk.co.epixstudios.skylark.HistoryActivity"
     tools:showIn="@layout/activity_history">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="" />
+    <TableLayout
+        android:id="@+id/table_notifications"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TableRow
+            android:background="#EEEEEE"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFeatureSettings=""
+                android:text="Type"
+                android:textAppearance="@android:style/TextAppearance.Material.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date"
+                android:textAppearance="@android:style/TextAppearance.Material.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Content"
+                android:textAppearance="@android:style/TextAppearance.Material.Title" />
+        </TableRow>
+    </TableLayout>
 
 </android.support.v4.widget.NestedScrollView>
