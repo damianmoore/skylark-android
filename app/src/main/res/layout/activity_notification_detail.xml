@@ -15,44 +15,36 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <TableLayout
+            <ScrollView
+                android:id="@+id/login_form"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+                <TableLayout
+                    android:id="@+id/table_variables"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <TableRow
-                    android:background="#EEEEEE"
-                    android:padding="5dp">
+                    <TableRow
+                        android:background="#EEEEEE"
+                        android:padding="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFeatureSettings=""
-                        android:text="Key"
-                        android:textAppearance="@android:style/TextAppearance.Material.Title" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFeatureSettings=""
+                            android:text="Key"
+                            android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Value"
-                        android:textAppearance="@android:style/TextAppearance.Material.Title" />
-                </TableRow>
-
-                <TableRow
-                    android:padding="5dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Title" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Example" />
-                </TableRow>
-            </TableLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Value"
+                            android:textAppearance="@android:style/TextAppearance.Material.Title" />
+                    </TableRow>
+                </TableLayout>
+            </ScrollView>
         </LinearLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

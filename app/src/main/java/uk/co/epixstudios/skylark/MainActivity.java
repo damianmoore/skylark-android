@@ -89,10 +89,10 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        SharedPreferences settings = getPreferences(0);
+                        SharedPreferences settings = getSharedPreferences("app_preferences", 0);
                         SharedPreferences.Editor editor = settings.edit();
                         try {
-                            editor.putString("id", response.get("id").toString());
+                            editor.putString("deviceId", response.get("id").toString());
                         }
                         catch (JSONException e) {}
 

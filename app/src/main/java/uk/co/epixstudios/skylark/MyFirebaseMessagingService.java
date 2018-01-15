@@ -30,6 +30,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void sendNotification(Map<String, String> data) {
         Intent intent = new Intent(this, NotificationDetailActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("NOTIFICATION_ID", data.get("id"));
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
