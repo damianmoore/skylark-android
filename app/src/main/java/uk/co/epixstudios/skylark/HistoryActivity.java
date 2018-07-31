@@ -25,7 +25,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 public class HistoryActivity extends AppCompatActivity {
     static TableLayout tableLayout;
@@ -49,7 +54,7 @@ public class HistoryActivity extends AppCompatActivity {
         tableLayout = (TableLayout) findViewById(R.id.table_notifications);
 
         SharedPreferences settings = getSharedPreferences("app_preferences", 0);
-        final String server = settings.getString("server", "http://127.0.0.1:8000");
+        final String server = settings.getString("server", "http://127.0.0.1:8000/");
         this.fetchNotifications(server);
     }
 
@@ -79,7 +84,7 @@ public class HistoryActivity extends AppCompatActivity {
 
     void fetchNotifications(String server) {
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        String url = server + "/api/notifications/";
+        String url = server + "api/notifications/";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -90,7 +95,7 @@ public class HistoryActivity extends AppCompatActivity {
                             results = response.getJSONArray("results");
                             for (int i = 0, size = results.length(); i < size; i++) {
                                 JSONObject o = results.getJSONObject(i);
-                                HistoryActivity.this.addItem(HistoryActivity.this, o.getString("id"), o.getString("webhook"), o.getString("created"), o.getString("title"));
+                                HistoryActivity.this.addItem(HistoryActivity.this, o.getString("id"), o.getString("webhook"), formatDate(o.getString("created")), o.getString("title"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -103,5 +108,28 @@ public class HistoryActivity extends AppCompatActivity {
         );
 
         queue.add(jsonObjectRequest);
+    }
+
+    String formatDate(String dateStr) {
+        Date now = Calendar.getInstance().getTime();
+        DateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat dateAndTime = new SimpleDateFormat("d MMM kk:mm");
+        dateAndTime.setTimeZone(TimeZone.getDefault());
+        DateFormat timeOnly = new SimpleDateFormat("kk:mm");
+        dateAndTime.setTimeZone(TimeZone.getDefault());
+        try {
+            Date parsedDate = isoFormat.parse(dateStr);
+            if (now.getTime() - parsedDate.getTime() < 24*60*60*1000) {
+                dateStr = timeOnly.format(parsedDate);
+            }
+            else {
+                dateStr = dateAndTime.format(parsedDate);
+            }
+        }
+        catch (java.text.ParseException e) {
+            dateStr = e.toString();
+        }
+        return dateStr;
     }
 }

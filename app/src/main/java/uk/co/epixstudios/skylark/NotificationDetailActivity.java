@@ -57,7 +57,7 @@ public class NotificationDetailActivity extends AppCompatActivity {
 
     void fetchParameters(String server, String notificationId) {
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        String url = server + "/api/notification/" + notificationId + "/";
+        String url = server + "api/notification/" + notificationId + "/";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
             new Response.Listener<JSONObject>() {

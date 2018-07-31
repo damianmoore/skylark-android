@@ -57,7 +57,11 @@ public class SettingsActivity extends AppCompatActivity {
         deviceNameInput.setText(settings.getString("deviceName", Build.MANUFACTURER + " " + Build.MODEL));
 
         final TextView serverInput = (TextView) findViewById(R.id.input_server);
-        serverInput.setText(settings.getString("server", "http://127.0.0.1:8000"));
+        String url = settings.getString("server", "http://127.0.0.1:8000/");
+        if (!url.endsWith("/")) {
+            url += '/';
+        }
+        serverInput.setText(url);
 
         final TextView idInput = (TextView) findViewById(R.id.text_id);
         idInput.setText(settings.getString("id", ""));
@@ -70,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
 
-            String url = serverInput.getText() + "/api/register/";
+            String url = serverInput.getText() + "api/register/";
 
             Map<String, String> jsonParams = new HashMap<String, String>();
             jsonParams.put("name", deviceNameInput.getText().toString());
