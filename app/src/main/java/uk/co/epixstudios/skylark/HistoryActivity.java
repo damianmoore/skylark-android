@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -29,11 +30,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.TimeZone;
+
 
 public class HistoryActivity extends AppCompatActivity {
     static TableLayout tableLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,16 +48,59 @@ public class HistoryActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HistoryActivity.this, SettingsActivity.class);
-                startActivity(intent);
+            Intent intent = new Intent(HistoryActivity.this, SettingsActivity.class);
+            startActivity(intent);
             }
         });
 
-        tableLayout = (TableLayout) findViewById(R.id.table_notifications);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setColorSchemeResources(
+                R.color.colorAccent,
+                R.color.colorPrimary);
 
-        SharedPreferences settings = getSharedPreferences("app_preferences", 0);
-        final String server = settings.getString("server", "http://127.0.0.1:8000/");
-        this.fetchNotifications(server);
+        tableLayout = (TableLayout) findViewById(R.id.table_notifications);
+        mSwipeRefreshLayout.setRefreshing(true);
+        fetchNotifications();
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchNotifications();
+            }
+        });
+    }
+
+    private void onRefreshComplete() {
+        new android.os.Handler().postDelayed(
+            new Runnable() {
+                public void run() {
+                    if (mSwipeRefreshLayout.isRefreshing()) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+            },
+        1000);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_history, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_refresh:
+                if (!mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                }
+                fetchNotifications();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     void addItem(Context context, String id, String type, String date, String content) {
@@ -73,38 +118,41 @@ public class HistoryActivity extends AppCompatActivity {
         item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HistoryActivity.this, NotificationDetailActivity.class);
-                intent.putExtra("NOTIFICATION_ID", notificationId);
-                startActivity(intent);
+            Intent intent = new Intent(HistoryActivity.this, NotificationDetailActivity.class);
+            intent.putExtra("NOTIFICATION_ID", notificationId);
+            startActivity(intent);
             }
         });
 
         tableLayout.addView(item);
     }
 
-    void fetchNotifications(String server) {
+    private void fetchNotifications() {
+        SharedPreferences settings = getSharedPreferences("app_preferences", 0);
+        String server = settings.getString("server", "http://127.0.0.1:8000/");
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         String url = server + "api/notifications/";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        JSONArray results = null;
-                        try {
-                            results = response.getJSONArray("results");
-                            for (int i = 0, size = results.length(); i < size; i++) {
-                                JSONObject o = results.getJSONObject(i);
-                                HistoryActivity.this.addItem(HistoryActivity.this, o.getString("id"), o.getString("webhook"), formatDate(o.getString("created")), o.getString("title"));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+            new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    JSONArray results = null;
+                    try {
+                        results = response.getJSONArray("results");
+                        for (int i = 0, size = results.length(); i < size; i++) {
+                            JSONObject o = results.getJSONObject(i);
+                            HistoryActivity.this.addItem(HistoryActivity.this, o.getString("id"), o.getString("webhook"), formatDate(o.getString("created")), o.getString("title"));
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {}
-        }
+                    onRefreshComplete();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {}
+            }
         );
 
         queue.add(jsonObjectRequest);
