@@ -4,10 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,12 +11,17 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,14 +54,12 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
+        tableLayout = (TableLayout) findViewById(R.id.table_notifications);
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setColorSchemeResources(
-                R.color.colorAccent,
-                R.color.colorPrimary);
-
-        tableLayout = (TableLayout) findViewById(R.id.table_notifications);
-        mSwipeRefreshLayout.setRefreshing(true);
-        fetchNotifications();
+            R.color.colorAccent,
+            R.color.colorPrimary);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -68,6 +67,9 @@ public class HistoryActivity extends AppCompatActivity {
                 fetchNotifications();
             }
         });
+
+        mSwipeRefreshLayout.setRefreshing(true);
+        fetchNotifications();
     }
 
     private void onRefreshComplete() {

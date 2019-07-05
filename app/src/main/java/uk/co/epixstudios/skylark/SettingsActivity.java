@@ -1,17 +1,23 @@
 package uk.co.epixstudios.skylark;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,6 +25,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
@@ -26,14 +34,18 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = "SettingsActivity";
+    String GROUP_KEY_DEFAULT = "uk.epixstudios.skylark.DEFAULT_GROUP";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "SettingsActivity onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -87,6 +99,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (!refreshedToken.isEmpty()) {
                 jsonParams.put("firebase_token", refreshedToken);
             }
+            Snackbar.make(view, refreshedToken, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(jsonParams),
                 new Response.Listener<JSONObject>() {
@@ -120,6 +134,51 @@ public class SettingsActivity extends AppCompatActivity {
             );
 
             queue.add(jsonObjectRequest);
+            }
+        });
+
+
+        Button testNotificationButton = (Button) findViewById(R.id.button_test_notification);
+        testNotificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                Log.i(TAG, "onClick");
+//                Intent intent = new Intent(this, NotificationDetailActivity);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                intent.putExtra("NOTIFICATION_ID", 1);
+//                PendingIntent pendingIntent = PendingIntent.getActivity(ContextCompat, 0 /* Request code */, intent,
+//                        PendingIntent.FLAG_ONE_SHOT);
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                String NOTIFICATION_CHANNEL_ID = "my_channel_id_01";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_LOW);
+
+                    // Configure the notification channel.
+                    notificationChannel.setDescription("Channel description");
+                    notificationChannel.enableLights(true);
+                    notificationChannel.setLightColor(Color.RED);
+                    notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+                    notificationChannel.enableVibration(true);
+                    notificationManager.createNotificationChannel(notificationChannel);
+                }
+
+
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(AppActivity.getAppContext(), NOTIFICATION_CHANNEL_ID);
+
+                notificationBuilder.setAutoCancel(true)
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setWhen(System.currentTimeMillis())
+                        .setSmallIcon(R.mipmap.ic_notification)
+                        .setTicker("Hearty365")
+                        //     .setPriority(Notification.PRIORITY_MAX)
+                        .setContentTitle("Default notification")
+                        .setContentText("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+                        .setContentInfo("Info");
+
+                notificationManager.notify(/*notification id*/1, notificationBuilder.build());
+                Log.i(TAG, "notified");
             }
         });
 
