@@ -1,6 +1,7 @@
 package uk.co.epixstudios.skylark;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import java.util.Iterator;
 public class NotificationDetailActivity extends AppCompatActivity {
 
     static TableLayout tableVariables;
+    private static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class NotificationDetailActivity extends AppCompatActivity {
 
         this.fetchParameters(server, notificationId);
 
+        mContext = this;
     }
 
     static void addTableRow(Context context, String key, String val) {
@@ -53,6 +56,18 @@ public class NotificationDetailActivity extends AppCompatActivity {
 
         keyText.setText(key);
         valText.setText(val);
+
+        if (val.startsWith("https://") || val.startsWith("http://")) {
+            final String url = val;
+            valText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                Intent intent = new Intent(mContext, WebviewActivity.class);
+                intent.putExtra("URL", url);
+                mContext.startActivity(intent);
+                }
+            });
+        }
         tableVariables.addView(item);
     }
 
@@ -67,11 +82,9 @@ public class NotificationDetailActivity extends AppCompatActivity {
                     Iterator<?> keys = response.keys();
                     while(keys.hasNext()) {
                         String key = (String)keys.next();
-                        Object o = null;
                         if (!key.equals("id")) {
                             try {
-                                o = response.get(key);
-                                NotificationDetailActivity.this.addTableRow(NotificationDetailActivity.this, key, o.toString());
+                                NotificationDetailActivity.this.addTableRow(NotificationDetailActivity.this, key, response.get(key).toString());
                             } catch (JSONException e) {}
                         }
                     }

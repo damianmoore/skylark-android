@@ -1,11 +1,12 @@
 *.iml
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+local.properties
+.idea/workspace.xml
+.idea/libraries
+.idea/caches/
 .DS_Store
-/build
-/captures
+build
+captures
 .externalNativeBuild
 
 app/src/main/res/mipmap-*/attachment_*.png

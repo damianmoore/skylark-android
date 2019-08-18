@@ -7,4 +7,5 @@
     <string name="action_register">Register</string>
     <string name="action_test_notification">Test notification</string>
     <string name="title_activity_history">Notifications</string>
+    <string name="title_webview">Web page</string>
 </resources>
