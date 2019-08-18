@@ -1,5 +1,6 @@
 package uk.co.epixstudios.skylark;
 
+import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,7 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
@@ -25,16 +28,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -55,9 +61,32 @@ public class SettingsActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-                Snackbar.make(view, "Token: " + refreshedToken, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//            String refreshedToken = FirebaseInstanceId.getInstance().getInstanceId().toString();
+//            Snackbar.make(view, "Token: " + refreshedToken, Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show();
+
+            FirebaseApp.initializeApp(AppActivity.getAppContext());
+
+            FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "getInstanceId failed", task.getException());
+                        return;
+                    }
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+
+                    // Log and toast
+                    String msg = token;
+                    Log.d(TAG, msg);
+//                    Snackbar.make(view, "Token: " + token, Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+                    Toast.makeText(AppActivity.getAppContext(), msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -143,23 +172,18 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 Log.i(TAG, "onClick");
-//                Intent intent = new Intent(this, NotificationDetailActivity);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                intent.putExtra("NOTIFICATION_ID", 1);
-//                PendingIntent pendingIntent = PendingIntent.getActivity(ContextCompat, 0 /* Request code */, intent,
-//                        PendingIntent.FLAG_ONE_SHOT);
 
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                String NOTIFICATION_CHANNEL_ID = "my_channel_id_01";
+                String NOTIFICATION_CHANNEL_ID = "high_importance";
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_LOW);
+                    NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "High Importance Notifications", NotificationManager.IMPORTANCE_HIGH);
 
                     // Configure the notification channel.
-                    notificationChannel.setDescription("Channel description");
+                    notificationChannel.setDescription("Notifications from Skylark that the sender has marked as having a low level of importance");
                     notificationChannel.enableLights(true);
-                    notificationChannel.setLightColor(Color.RED);
-                    notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+                    notificationChannel.setLightColor(Color.CYAN);
+                    notificationChannel.setVibrationPattern(new long[]{0, 250, 250, 250, 250, 250});
                     notificationChannel.enableVibration(true);
                     notificationManager.createNotificationChannel(notificationChannel);
                 }
@@ -168,14 +192,13 @@ public class SettingsActivity extends AppCompatActivity {
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(AppActivity.getAppContext(), NOTIFICATION_CHANNEL_ID);
 
                 notificationBuilder.setAutoCancel(true)
-                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setDefaults(Notification.DEFAULT_VIBRATE)
                         .setWhen(System.currentTimeMillis())
                         .setSmallIcon(R.mipmap.ic_notification)
-                        .setTicker("Hearty365")
-                        //     .setPriority(Notification.PRIORITY_MAX)
                         .setContentTitle("Default notification")
                         .setContentText("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-                        .setContentInfo("Info");
+                        .setContentInfo("Info")
+                        .setVibrate(new long[]{0, 250, 250, 250, 250, 250});
 
                 notificationManager.notify(/*notification id*/1, notificationBuilder.build());
                 Log.i(TAG, "notified");

@@ -1,5 +1,7 @@
 package uk.co.epixstudios.skylark;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,8 +11,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v7.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import android.os.Build;
+import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -22,12 +27,23 @@ import java.util.Map;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    String GROUP_KEY_DEFAULT = "uk.epixstudios.skylark.DEFAULT_GROUP";
+    private static final String TAG = "MyFirebaseMessagingServ";
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        Log.i(TAG, "onMessageReceived");
         sendNotification(remoteMessage.getData());
     }
 
     private void sendNotification(Map<String, String> data) {
+        Log.i(TAG, "sendNotification");
+        Log.i(TAG, "id: " + data.get("id"));
+        Log.i(TAG, "title: " + data.get("title"));
+        Log.i(TAG, "body: " + data.get("body"));
+        Log.i(TAG, "icon: " + data.get("icon"));
+
+
         Intent intent = new Intent(this, NotificationDetailActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("NOTIFICATION_ID", data.get("id"));
@@ -50,21 +66,45 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             e.printStackTrace();
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-        notificationBuilder.setSmallIcon(R.mipmap.ic_notification)
-                .setLargeIcon(remotePicture)
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String NOTIFICATION_CHANNEL_ID = "high_importance";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "High Importance Notifications", NotificationManager.IMPORTANCE_HIGH);
+
+            // Configure the notification channel.
+            notificationChannel.setDescription("Notifications from Skylark that the sender has marked as having a low level of importance");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.CYAN);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(AppActivity.getAppContext(), NOTIFICATION_CHANNEL_ID);
+
+        notificationBuilder.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.mipmap.ic_notification)
+                .setPriority(Notification.PRIORITY_MAX)
                 .setContentTitle(data.get("title"))
                 .setContentText(data.get("body"))
-                .setAutoCancel(true)
+                .setLargeIcon(remotePicture)
                 .setSound(defaultSoundUri)
-                .setColor(myColor)
-                .setContentIntent(pendingIntent)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setColor(myColor);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(/*notification id*/1, notificationBuilder.build());
+        Log.i(TAG, "notified");
+    }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    public void onNewToken(String token) {
+        Log.d(TAG, "New token: " + token);
+
+        // If you want to send messages to this application instance or
+        // manage this apps subscriptions on the server side, send the
+        // Instance ID token to your app server.
+//        sendRegistrationToServer(token);
+        Log.i(TAG, "Send registration to server");
     }
 }
