@@ -2,6 +2,7 @@ package uk.co.epixstudios.skylark;
 
 import android.os.Bundle;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +15,7 @@ public class WebviewActivity extends AppCompatActivity {
 
         String url = getIntent().getStringExtra("URL");
         WebView wv = (WebView) findViewById(R.id.webview);
+        wv.setWebViewClient(new WebViewClient());
         wv.loadUrl(url);
     }
 }
