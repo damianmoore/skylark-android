@@ -31,19 +31,19 @@
                         android:padding="10dp">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="30"
                             android:fontFeatureSettings=""
                             android:text="Key"
-                            android:textAppearance="@android:style/TextAppearance.Material.Title" />
+                            android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="70"
                             android:text="Value"
-                            android:textAppearance="@android:style/TextAppearance.Material.Title" />
+                            android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
                     </TableRow>
                 </TableLayout>
             </ScrollView>

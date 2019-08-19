@@ -4,12 +4,12 @@
 
     <TextView
         android:id="@+id/key"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="30"
         android:textStyle="bold" />
     <TextView android:id="@+id/val"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="70" />
 </TableRow>

@@ -164,9 +164,9 @@ public class HistoryActivity extends AppCompatActivity {
         Date now = Calendar.getInstance().getTime();
         DateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        DateFormat dateAndTime = new SimpleDateFormat("d MMM kk:mm");
+        DateFormat dateAndTime = new SimpleDateFormat("d MMM HH:mm");
         dateAndTime.setTimeZone(TimeZone.getDefault());
-        DateFormat timeOnly = new SimpleDateFormat("kk:mm");
+        DateFormat timeOnly = new SimpleDateFormat("HH:mm");
         dateAndTime.setTimeZone(TimeZone.getDefault());
         try {
             Date parsedDate = isoFormat.parse(dateStr);
