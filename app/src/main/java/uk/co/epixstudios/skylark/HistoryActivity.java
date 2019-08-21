@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,8 @@ import java.util.TimeZone;
 
 
 public class HistoryActivity extends AppCompatActivity {
+
+    private static final String TAG = "HistoryActivity";
     static TableLayout tableLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -133,6 +136,7 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void fetchNotifications() {
+        Log.i(TAG, "fetchNotifications");
         SharedPreferences settings = getSharedPreferences("app_preferences", 0);
         String server = settings.getString("server", "http://127.0.0.1:8000/");
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
@@ -145,8 +149,12 @@ public class HistoryActivity extends AppCompatActivity {
                     JSONArray results = null;
                     try {
                         results = response.getJSONArray("results");
+                        Log.i(TAG, "got " + results.length() + " results");
+                        tableLayout.removeAllViews();
+
                         for (int i = 0, size = results.length(); i < size; i++) {
                             JSONObject o = results.getJSONObject(i);
+                            Log.i(TAG, o.getString("title"));
                             HistoryActivity.this.addItem(HistoryActivity.this, o.getString("id"), o.getString("webhook"), formatDate(o.getString("created")), o.getString("title"));
                         }
                     } catch (JSONException e) {

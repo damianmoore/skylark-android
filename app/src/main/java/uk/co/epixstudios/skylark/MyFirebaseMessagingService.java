@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
+import java.util.Random;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -42,7 +43,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.i(TAG, "title: " + data.get("title"));
         Log.i(TAG, "body: " + data.get("body"));
         Log.i(TAG, "icon: " + data.get("icon"));
-
 
         Intent intent = new Intent(this, NotificationDetailActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -95,7 +95,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setColor(myColor);
 
-        notificationManager.notify(/*notification id*/1, notificationBuilder.build());
+        notificationManager.notify(/*notification id*/new Random().nextInt(), notificationBuilder.build());
         Log.i(TAG, "notified");
     }
 
