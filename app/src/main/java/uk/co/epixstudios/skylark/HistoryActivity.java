@@ -100,6 +100,9 @@ public class HistoryActivity extends AppCompatActivity {
                 }
                 fetchNotifications();
                 return true;
+            case R.id.menu_settings:
+                Intent intent = new Intent(HistoryActivity.this, SettingsActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

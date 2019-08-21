@@ -73,7 +73,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "High Importance Notifications", NotificationManager.IMPORTANCE_HIGH);
 
             // Configure the notification channel.
-            notificationChannel.setDescription("Notifications from Skylark that the sender has marked as having a low level of importance");
+            notificationChannel.setDescription("Notifications from Skylark that the sender has marked as having a high level of importance");
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(myColor);
             notificationChannel.enableVibration(true);
