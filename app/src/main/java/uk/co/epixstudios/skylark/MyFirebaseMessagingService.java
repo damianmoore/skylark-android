@@ -75,7 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // Configure the notification channel.
             notificationChannel.setDescription("Notifications from Skylark that the sender has marked as having a low level of importance");
             notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.CYAN);
+            notificationChannel.setLightColor(myColor);
             notificationChannel.enableVibration(true);
             notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
             notificationManager.createNotificationChannel(notificationChannel);
@@ -90,6 +90,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setPriority(Notification.PRIORITY_MAX)
                 .setContentTitle(data.get("title"))
                 .setContentText(data.get("body"))
+                .setContentIntent(pendingIntent)
                 .setLargeIcon(remotePicture)
                 .setSound(defaultSoundUri)
                 .setColor(myColor);
