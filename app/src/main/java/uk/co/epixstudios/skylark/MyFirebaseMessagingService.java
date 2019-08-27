@@ -44,10 +44,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.i(TAG, "body: " + data.get("body"));
         Log.i(TAG, "icon: " + data.get("icon"));
 
+        int notificationId = new Random().nextInt();
+
         Intent intent = new Intent(this, NotificationDetailActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("NOTIFICATION_ID", data.get("id"));
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, notificationId /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -95,7 +96,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setColor(myColor);
 
-        notificationManager.notify(/*notification id*/new Random().nextInt(), notificationBuilder.build());
+        notificationManager.notify(/*notification id*/notificationId, notificationBuilder.build());
         Log.i(TAG, "notified");
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TableLayout;
@@ -28,9 +29,11 @@ public class NotificationDetailActivity extends AppCompatActivity {
 
     static TableLayout tableVariables;
     private static Context mContext;
+    private static final String TAG = "NotificationDetailActiv";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
@@ -41,6 +44,8 @@ public class NotificationDetailActivity extends AppCompatActivity {
         final String server = settings.getString("server", "http://127.0.0.1:8000");
 
         String notificationId = getIntent().getStringExtra("NOTIFICATION_ID");
+        Log.i(TAG, "notificationId = " + notificationId);
+
         this.addTableRow(this,"notificationId", notificationId);
 
         this.fetchParameters(server, notificationId);
