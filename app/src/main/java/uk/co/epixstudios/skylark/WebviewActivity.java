@@ -13,9 +13,12 @@ public class WebviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
 
-        String url = getIntent().getStringExtra("URL");
         WebView wv = (WebView) findViewById(R.id.webview);
         wv.setWebViewClient(new WebViewClient());
+        wv.clearHistory();
+        wv.getSettings().setJavaScriptEnabled(true);
+
+        String url = getIntent().getStringExtra("URL");
         wv.loadUrl(url);
     }
 }
